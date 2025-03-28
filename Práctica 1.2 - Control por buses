@@ -1,0 +1,41 @@
+#include "mbed.h"
+#include "platform/mbed_thread.h"
+#include "rtos.h"
+#include "chrono"
+using namespace std::chrono_literals;
+
+
+BusIn switchesBus(p5, p6, p7, p8); 
+BusOut ledsBus(p9, p10, p11);      
+
+int main() {
+    while (1) {
+        uint8_t switchState = switchesBus.read();
+
+        switch (switchState) {
+            case 0: case 1: case 2: case 3:
+                ledsBus = 0b100; // Rojo
+                break;
+            case 4: case 5:
+                ledsBus = 0b010; // Amarillo
+                break;
+            case 6: case 7:
+                ledsBus = 0b110; // Rojo + Amarillo
+                break;
+            case 8: case 9: case 10: case 11:
+                ledsBus = 0b011; // Amarillo + Azul
+                break;
+            case 12: case 13: case 14:
+                ledsBus = 0b001; // Azul
+                break;
+            case 15:
+                ledsBus = 0b111; // Todos encendidos
+                break;
+            default:
+                ledsBus = 0b000; // Apagado (por si acaso)
+                break;
+        }
+
+       thread_sleep_for(50);
+    }
+}
